@@ -1,0 +1,112 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+typedef char element; 
+
+typedef struct customer {		//구조체 선언  
+	element name[15];
+	element tel[20];
+	element request[30];
+	struct customer *link;
+}customer;
+
+typedef struct {		//front와 rear인자 선언  
+	customer *front, *rear;
+}CustomerType;
+
+CustomerType *createQ() {		//연결리스트 만들 기 
+	CustomerType *CT;
+	CT = (CustomerType *)malloc(sizeof(CustomerType));
+	CT->front = NULL;
+	CT->rear = NULL;
+	return CT; 
+}
+
+int isEmpty(CustomerType *CT) {		//리스트가 비어있는지 확인 
+	if (CT->front == NULL) {
+		printf("\n 대기하는 손님이 없습니다.");
+		return 1; //1은 참이므로 비어있다면 if문이 만족하도록 1을 보냄 
+	}
+	else return 0;
+}
+
+void enroll(CustomerType *CT) {		//등록하는 함수 
+	customer *newnode = (customer *)malloc(sizeof(customer));
+	scanf("%s%s%s",&newnode->name,&newnode->tel,&newnode->request);
+	/*			//이렇게 하면 왜안되는 건지 모르겠음. (첫번째 식의 문자를 받지 못함) 
+	gets(newnode->name);
+	gets(newnode->tel);
+	gets(newnode->request);
+	*/
+	if(CT->front ==NULL) {		//빈 리스트라면 
+		CT->front = newnode;
+		CT->rear = newnode;
+	}
+	else {		//비어있지 않다면 
+		CT->rear->link = newnode;
+		CT->rear = newnode;
+	}
+}
+
+int del(CustomerType *CT){		//삭제하는 함수 
+	customer *old = CT->front;
+	if (isEmpty(CT)) {		//비어있으면 삭제가 불가능 하므로 비어있는지 확인하는 함수로 간다음 비어있으면 되돌려보냄 
+		return 0;
+	}	
+ 	else {
+ 	   CT->front = CT->front->link;
+		if(CT->front == NULL) {
+			CT->rear = NULL;
+ 		}
+ 	   free(old); 
+ 	   return 1;
+  	}
+}
+
+int printwho(CustomerType *CT) {
+	customer *temp = CT->front;
+	if (isEmpty(CT)) {
+		return 0;
+	}
+	
+	else {
+			printf("다음 고객님은 %s님이며 전화번호는 %s 이고 요청품목은 %s입니다.\n ", temp->name, temp->tel, temp->request);
+		return 1;
+	}
+	
+}
+
+int main () {
+	CustomerType *LQ1 = createQ();
+	int choice = 0; 
+	printf("고객관리 프로그램 \n");
+
+	while (choice!=4){
+		printf("메뉴를 고르세요.\n");
+		printf(" 1. 서비스 등록 \n 2. 대기번호\n 3. 서비스 처리\n 4.종료\n");
+		scanf("%d",&choice);
+		switch(choice){
+			case 1 :
+				printf("등록합니다. \n 이름, 전화번호를 입력해주시고 냉장고,TV, 핸드폰중 서비스를 원하는 품목을 입력하세요. \n");
+				enroll(LQ1);				
+				break;
+				
+			case 2:
+				printwho(LQ1);
+				break;
+				
+			case 3:
+				del(LQ1);
+				break;
+			
+			case 4:
+				system("pause");
+				return 0;
+			
+			default :
+				printf("다시하세요\n");
+				break;
+		}
+		
+	}	
+}
